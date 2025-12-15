@@ -80,39 +80,58 @@
 }
 
 .csr-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 10px 16px;
     font-size: 13px;
     line-height: 1.5;
     color: #d1d5db;
     border-left: 2px solid transparent;
-    cursor: pointer;
     transition: all 0.2s;
+    gap: 12px;
 }
 
 .csr-item:hover {
     background: rgba(255, 255, 255, 0.05);
-    color: #fff;
     border-left-color: #10a37f;
-    /* ChatGPT Green */
 }
 
-.csr-item.csr-copied::after {
-    content: "Copied!";
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    color: #10a37f;
-    /* The following properties were in the original rule but removed by the edit:
-    float: right;
-    background: #10a37f;
+.csr-query-text {
+    flex: 1;
+    cursor: pointer;
+    word-break: break-word;
+}
+
+.csr-query-text:hover {
     color: #fff;
-    padding: 2px 6px;
+}
+
+.csr-text-copied {
+    color: #10a37f !important;
+}
+
+.csr-tools {
+    display: flex;
+    gap: 8px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.csr-item:hover .csr-tools {
+    opacity: 1;
+}
+
+.csr-tool-btn {
+    text-decoration: none;
+    font-size: 14px;
+    padding: 2px;
     border-radius: 4px;
-    margin-left: 8px;
-    animation: fadeIn 0.2s;
-    */
+    transition: transform 0.1s;
+}
+
+.csr-tool-btn:hover {
+    transform: scale(1.2);
 }
 
 /* Scrollbar */

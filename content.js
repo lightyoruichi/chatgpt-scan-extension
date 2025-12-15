@@ -57,17 +57,52 @@ function showOverlay(queries) {
   const list = document.createElement("ul");
   list.className = "csr-list";
 
-  queries.forEach((q) => {
-    const item = document.createElement("li");
-    item.className = "csr-item";
-    // Add a copy button or just text
-    item.textContent = q;
-    item.title = "Click to copy";
-    item.onclick = () => {
+  queries.forEach(q => {
+    const item = document.createElement('li');
+    item.className = 'csr-item';
+
+    // Main text container
+    const textSpan = document.createElement('span');
+    textSpan.className = 'csr-query-text';
+    textSpan.textContent = q;
+    textSpan.title = "Click to copy";
+    textSpan.onclick = () => {
       navigator.clipboard.writeText(q);
-      item.classList.add("csr-copied");
-      setTimeout(() => item.classList.remove("csr-copied"), 1000);
+      textSpan.classList.add('csr-text-copied');
+      setTimeout(() => textSpan.classList.remove('csr-text-copied'), 1000);
     };
+
+    // Tools container
+    const toolsDiv = document.createElement('div');
+    toolsDiv.className = 'csr-tools';
+
+    // Helper to create tool links
+    const createToolLink = (emoji, url, title) => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.className = 'csr-tool-btn';
+      a.title = title;
+      a.innerHTML = emoji;
+      return a;
+    };
+
+    const encodedQ = encodeURIComponent(q);
+
+    // 1. Google Search
+    toolsDiv.appendChild(createToolLink('🔎', `https://www.google.com/search?q=${encodedQ}`, 'Search on Google'));
+
+    // 2. Google Trends
+    toolsDiv.appendChild(createToolLink('📈', `https://trends.google.com/trends/explore?q=${encodedQ}`, 'Check Google Trends'));
+
+    // 3. AnswerThePublic (Direct link as requested/implied)
+    // ATP doesn't have a simple GET param for search results that persists cleanly without redirection/setup often,
+    // but we can try to link to the home page or a search structure if known.
+    // Linking to homepage is safest based on "https://answerthepublic.com/ link".
+    toolsDiv.appendChild(createToolLink('🧠', `https://answerthepublic.com/?q=${encodedQ}`, 'AnswerThePublic'));
+
+    item.appendChild(textSpan);
+    item.appendChild(toolsDiv);
     list.appendChild(item);
   });
 
