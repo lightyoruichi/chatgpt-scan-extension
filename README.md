@@ -14,11 +14,9 @@ Currently, this data is hidden. A user must manualy inspect network requests to 
 2.  **Use**: Ask ChatGPT something that requires browsing (e.g., "latest iphone rumors").
 3.  **Reveal**: As soon as it searches, a premium glassmorphism overlay appears showing the exact queries used.
 
-## Technical Implementation
-This extension uses a **Main World Content Script** to intercept `window.fetch` requests. This allows access to the response body of network requests which is otherwise restricted in Manifest V3.
-
-- **`interceptor.js`**: Injected into the Main World to wrap `fetch`, parse the streaming JSON response, and extract `search_model_queries`.
-- **`content.js`**: Runs in the Isolated World to listen for messages from the interceptor and render the UI.
+| Example 1 | Example 2 |
+|:---:|:---:|
+| ![Example 1](media/example1.png) | ![Example 2](media/example2.png) |
 
 ## Installation / Development
 
