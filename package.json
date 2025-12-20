@@ -1,35 +1,19 @@
 {
-  "name": "chatgpt-search-query-revealer",
+  "name": "chatgpt-search-revealer",
   "version": "1.0.0",
-  "private": true,
   "description": "Reveals hidden search queries used by ChatGPT.",
+  "type": "module",
   "scripts": {
-    "prettier": "npx prettier **/*.{md,html,json} -w",
-    "lint": "eslint **/*.js",
-    "lint:fix": "npm run lint -- --fix",
-    "prepare": "husky install"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit"
   },
-  "keywords": [],
-  "author": "Harinder Singh",
-  "license": "Apache-2.0",
   "devDependencies": {
-    "@eslint/js": "9.19.0",
-    "chrome-types": "0.1.335",
-    "eslint": "9.19.0",
-    "eslint-config-prettier": "9.1.0",
-    "eslint-plugin-jest": "28.11.0",
-    "eslint-plugin-prettier": "5.4.1",
-    "globals": "15.14.0",
-    "husky": "9.1.6",
-    "lint-staged": "15.2.10",
-    "prettier": "3.3.3"
-  },
-  "lint-staged": {
-    "**/*.js": [
-      "npx eslint --fix"
-    ],
-    "**/*.{md,html,json}": [
-      "npx prettier --write"
-    ]
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^25.0.3",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vite-plugin-checker": "^0.12.0"
   }
 }

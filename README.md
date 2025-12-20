@@ -1,39 +1,66 @@
-# ChatGPT Search Query Revealer
+# 🔍 AI Search Revealer (Premium Edition)
 
-A Chrome Extension that unlocks the "Search" black box by displaying the exact keywords ChatGPT sends to search engines (Bing) directly in the UI.
+![AI Search Revealer Icon](./public/icons/icon128.png)
 
-**Created by Harinder Singh (@lightyoruichi) of MIMR Growth Lab (http://mimrgrowthlab.com/)**
+**AI Search Revealer** is a high-performance, premium Chrome extension that uncovers the hidden search queries used by AI models before they answer your prompts. Gain deep insights into the "thought process" of your favorite LLMs.
 
-## Problem Statement
-When ChatGPT uses its "Browse" feature to answer a query (e.g., "best defamation lawyers in Ipoh"), it performs specific searches on Bing. These search queries are critical for SEO professionals and brands to understand how to rank for ChatGPT's answers.
+---
 
-Currently, this data is hidden. A user must manualy inspect network requests to find it. This extension automates that process.
+## 🚀 Key Features
 
-## User Flow (PLG & UX)
-1.  **Install**: No configuration required.
-2.  **Use**: Ask ChatGPT something that requires browsing (e.g., "latest iphone rumors").
-3.  **Reveal**: As soon as it searches, a premium glassmorphism overlay appears showing the exact queries used.
+- **Multi-Platform Intelligence**: Unified, robust extraction for:
+  - **ChatGPT** (SearchGPT & standard models)
+  - **Claude** (Tool-use & completion parsing)
+  - **Perplexity** (SSE message extraction)
+  - **Gemini** (Advanced deep-array parsing of `batchexecute` responses)
+- **Premium Glassmorphism UI**: A stunning, non-intrusive overlay with real-time "Live" status and platform-specific tagging.
+- **Bubble Mode (UX)**: Minimize the UI into a small, pulsing bubble to keep your workspace clean.
+- **One-Click Research Tools**:
+  - 🔎 **Verify**: Instant Google Search for any query.
+  - 📈 **Trends**: Check real-time demand on Google Trends.
+  - 🧠 **Insights**: Deep-dive into AnswerThePublic research.
+- **Proof of Value**: Real-time badge counter on the extension icon showing searches occurring behind the scenes.
+- **Power Features**: Right-click context menus for "Verify with Google" and "Explain with ChatGPT."
 
-| Example 1 | Example 2 |
-|:---:|:---:|
-| ![Example 1](media/example1.png) | ![Example 2](media/example2.png) |
+---
 
-## Installation / Development
+## 🛠 Installation Guide
 
-1.  Clone this repository.
-2.  Open Chrome and navigate to `chrome://extensions/`.
-3.  Enable "Developer mode" (top right).
-4.  Click "Load unpacked".
-5.  Select this directory (`chatgpt-search-revealer`).
-6.  Go to [chatgpt.com](https://chatgpt.com) and test it out!
+### 1. Build from Source
+Ensure you have [Node.js](https://nodejs.org/) installed, then run:
+```bash
+# Install dependencies
+npm install
 
-## Troubleshooting & Known Issues
+# Build the production bundle
+npm run build
+```
 
-- **Console Errors (`net::ERR_BLOCKED_BY_CLIENT`)**:
-    - You may see red errors in the console pointing to `interceptor.js` for domains like `ab.chatgpt.com`.
-    - **Cause**: These are tracking requests blocked by your ad-blocker.
-    - **Note**: The extension safely passes these requests through, but because it wraps `fetch`, Chrome attributes the error to the extension. It is harmless.
+### 2. Load into Chrome
+1. Open Chrome and navigate to `chrome://extensions/`.
+2. Enable **Developer Mode** (toggle in the top-right corner).
+3. Click **Load unpacked**.
+4. Select the `dist` folder generated in your project directory.
 
-- **Overlay not appearing**:
-    - Ensure you are on `chatgpt.com`.
-    - Check the console for `[ChatGPT Revealer]` logs.
+---
+
+## 🏗 Technical Stack
+
+- **Core**: TypeScript (Strict Level 10)
+- **Bundler**: Vite
+- **Manifest**: Version 3 (Modern Standards)
+
+---
+
+## 🔒 Privacy & Local-First Philosophy
+
+- **100% Local**: All network interception and parsing occur entirely within your browser. **No data ever leaves your computer.**
+- **No Analytics**: We do not track you. No cookies, no tracking pixels, no telemetry.
+- **Open Standards**: Fully compliant with Chrome Web Store safety guidelines.
+
+[Review our Full Privacy Policy](./PRIVACY_POLICY.md)
+
+---
+
+### Developed with ❤️ by [MIMR Growth Lab](https://mimrgrowthlab.com)
+© 2025 MIMR Growth Lab. All Rights Reserved.
