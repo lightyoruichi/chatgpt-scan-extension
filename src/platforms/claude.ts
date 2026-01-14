@@ -9,7 +9,7 @@ export const ClaudeContext: IPlatformExtractor = {
             url.includes("/completion")
         );
     },
-    extractQueries(text: string): string[] | null {
+    extract(text: string): { text: string; sources?: import("./types").Source[] }[] | null {
         const queries = new Set<string>();
 
         // 1. Try JSON parsing (Full Response)
@@ -43,6 +43,6 @@ export const ClaudeContext: IPlatformExtractor = {
             } catch (e) { }
         }
 
-        return queries.size > 0 ? Array.from(queries) : null;
+        return queries.size > 0 ? Array.from(queries).map(q => ({ text: q })) : null;
     },
 };

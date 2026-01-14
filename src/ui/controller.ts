@@ -1,6 +1,11 @@
 import type { InterceptedMessage } from "../platforms/types";
 
-export type CapturedQuery = { text: string; platform?: string; timestamp: number };
+export type CapturedQuery = {
+    text: string;
+    platform?: string;
+    timestamp: number;
+    sources?: import("../platforms/types").Source[];
+};
 
 export interface UiControllerDeps {
     doc: Document;
@@ -162,6 +167,36 @@ export function createUiController(deps: UiControllerDeps): UiController {
                 textEl.className = "csr-query-text";
                 textEl.textContent = item.text;
 
+                if (item.sources && item.sources.length > 0) {
+                    const sourcesContainer = deps.doc.createElement("div");
+                    sourcesContainer.className = "csr-sources-container";
+
+                    item.sources.forEach(source => {
+                        const chip = deps.doc.createElement("a");
+                        chip.className = "csr-source-chip";
+                        chip.href = source.url;
+                        chip.target = "_blank";
+                        chip.rel = "noreferrer";
+                        chip.title = source.title || source.url;
+
+                        // Icon (Simple favicon service or first letter fallback)
+                        const icon = deps.doc.createElement("img");
+                        icon.className = "csr-source-icon";
+                        icon.src = `https://www.google.com/s2/favicons?domain=${new URL(source.url).hostname}&sz=16`;
+                        icon.alt = "";
+                        icon.onerror = () => { icon.style.display = 'none'; }; // Hide broken icons
+
+                        const domain = deps.doc.createElement("span");
+                        domain.textContent = new URL(source.url).hostname.replace('www.', '');
+
+                        chip.appendChild(icon);
+                        chip.appendChild(domain);
+                        sourcesContainer.appendChild(chip);
+                    });
+
+                    li.appendChild(sourcesContainer);
+                }
+
                 const hint = deps.doc.createElement("div");
                 hint.className = "csr-copy-hint";
                 hint.textContent = "Click text to copy";
@@ -201,14 +236,22 @@ export function createUiController(deps: UiControllerDeps): UiController {
     };
 
     const handleInterceptedMessage = (message: Partial<InterceptedMessage>) => {
-        if (message.type !== "AI_SEARCH_REVEALER_FOUND" || !Array.isArray(message.queries)) return;
+        const newItems: import("../platforms/types").ExtractedQuery[] = [];
 
-        message.queries.forEach(q => {
-            if (!capturedQueries.some(item => item.text === q)) {
+        if (Array.isArray(message.results)) {
+            newItems.push(...message.results);
+        } else if (Array.isArray(message.queries)) {
+            // Backwards compat / shim
+            newItems.push(...message.queries.map(q => ({ text: q })));
+        }
+
+        newItems.forEach(item => {
+            if (!capturedQueries.some(q => q.text === item.text)) {
                 capturedQueries.unshift({
-                    text: q,
+                    text: item.text,
                     platform: message.platform,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    sources: item.sources
                 });
             }
         });

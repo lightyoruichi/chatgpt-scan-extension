@@ -1,11 +1,23 @@
+export interface Source {
+    url: string;
+    title?: string;
+    favicon?: string;
+}
+
+export interface ExtractedQuery {
+    text: string;
+    sources?: Source[];
+}
+
 export interface IPlatformExtractor {
     name: string;
     shouldIntercept(url: string): boolean;
-    extractQueries(text: string): string[] | null;
+    extract(text: string): ExtractedQuery[] | null;
 }
 
 export interface InterceptedMessage {
     type: "AI_SEARCH_REVEALER_FOUND";
-    queries: string[];
+    queries: string[]; // Keep for backward compat with UI for now? No, let's update.
+    results?: ExtractedQuery[]; // Optional for transition? Or just replace "queries"
     platform?: string;
 }

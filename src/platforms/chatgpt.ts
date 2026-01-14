@@ -8,8 +8,10 @@ export const ChatGPTContext: IPlatformExtractor = {
             url.includes("/backend-api/lat/r")
         );
     },
-    extractQueries(text: string): string[] | null {
+    extract(text: string): { text: string; sources?: import("./types").Source[] }[] | null {
         const queries = new Set<string>();
+        const sources = new Map<string, import("./types").Source>();
+
         const lines = text.split("\n");
 
         for (const line of lines) {
@@ -53,6 +55,19 @@ export const ChatGPTContext: IPlatformExtractor = {
                                         if (args.query) queries.add(args.query);
                                     } catch (e) { }
                                 }
+                            }
+                        });
+                    }
+
+                    // Extract sources from metadata.citations
+                    const citations = metadata?.citations;
+                    if (Array.isArray(citations)) {
+                        citations.forEach((c: any) => {
+                            if (c.url) {
+                                sources.set(c.url, {
+                                    url: c.url,
+                                    title: c.title || new URL(c.url).hostname
+                                });
                             }
                         });
                     }
@@ -121,6 +136,10 @@ export const ChatGPTContext: IPlatformExtractor = {
             }
         }
 
-        return queries.size > 0 ? Array.from(queries) : null;
+        const uniqueSources = Array.from(sources.values());
+        return queries.size > 0 ? Array.from(queries).map(q => ({
+            text: q,
+            sources: uniqueSources.length > 0 ? uniqueSources : undefined
+        })) : null;
     },
 };

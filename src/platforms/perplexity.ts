@@ -10,8 +10,10 @@ export const PerplexityContext: IPlatformExtractor = {
                     url.includes("with_schematized_response=true")))
         );
     },
-    extractQueries(text: string): string[] | null {
+    extract(text: string): { text: string; sources?: import("./types").Source[] }[] | null {
         const queries = new Set<string>();
+        const sources = new Map<string, import("./types").Source>();
+
         const lines = text.split("\n");
 
         for (const line of lines) {
@@ -38,6 +40,18 @@ export const PerplexityContext: IPlatformExtractor = {
                             obj.citations.forEach((c: any) => {
                                 if (c.query) queries.add(c.query);
                                 if (c.search_query) queries.add(c.search_query);
+
+                                // Capture URL and Title
+                                if (c.url) {
+                                    sources.set(c.url, { url: c.url, title: c.title || new URL(c.url).hostname });
+                                }
+                            });
+                        }
+
+                        // Also check for "results" or "web_results" which sometimes contain source info
+                        if (Array.isArray(obj.results)) {
+                            obj.results.forEach((r: any) => {
+                                if (r.url) sources.set(r.url, { url: r.url, title: r.title || r.name });
                             });
                         }
 
@@ -45,6 +59,12 @@ export const PerplexityContext: IPlatformExtractor = {
                             obj.steps.forEach((s: any) => {
                                 if ((s.type === "search" || s.step_type === "SEARCH_WEB") && (s.query || s.search_query)) {
                                     queries.add(s.query || s.search_query);
+                                }
+                                // Steps might contain results too
+                                if (Array.isArray(s.results)) {
+                                    s.results.forEach((r: any) => {
+                                        if (r.url) sources.set(r.url, { url: r.url, title: r.title || r.name });
+                                    });
                                 }
                             });
                         }
@@ -86,6 +106,13 @@ export const PerplexityContext: IPlatformExtractor = {
             }
         }
 
-        return queries.size > 0 ? Array.from(queries) : null;
+        if (queries.size === 0) return null;
+
+        const uniqueSources = Array.from(sources.values());
+        // Return queries with attached sources (associating all found sources with all found queries in this chunk for simplicity)
+        return Array.from(queries).map(q => ({
+            text: q,
+            sources: uniqueSources.length > 0 ? uniqueSources : undefined
+        }));
     },
 };

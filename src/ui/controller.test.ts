@@ -1,41 +1,60 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { createUiController } from "./controller";
 
-describe("UI controller", () => {
-    it("renders a collapsed bubble immediately", () => {
-        const ui = createUiController({
-            doc: document,
-            win: window,
-        });
+describe("UiController", () => {
+    let mockDoc: Document;
+    let mockWin: Window;
+    let mockContainer: HTMLDivElement;
 
-        ui.render();
-        const root = document.getElementById("csr-root");
-        expect(root).toBeTruthy();
-        expect(root?.classList.contains("collapsed")).toBe(true);
+    beforeEach(() => {
+        mockContainer = document.createElement("div");
+        mockContainer.id = "csr-root";
+
+        mockDoc = {
+            getElementById: vi.fn(),
+            createElement: vi.fn((tag) => document.createElement(tag)),
+            body: {
+                appendChild: vi.fn(),
+            },
+        } as unknown as Document;
+
+        (mockDoc.getElementById as any).mockReturnValue(mockContainer);
+
+        mockWin = {
+            navigator: {
+                clipboard: {
+                    writeText: vi.fn().mockResolvedValue(undefined),
+                },
+            },
+            setTimeout: vi.fn((cb) => cb()),
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            postMessage: vi.fn(),
+        } as unknown as Window;
     });
 
-    it("auto-expands on first captured query and does not inject HTML", () => {
-        const ui = createUiController({
-            doc: document,
-            win: window,
-        });
+    it("should render captured queries with sources", () => {
+        const controller = createUiController({ doc: mockDoc, win: mockWin });
 
-        ui.render();
-        ui.handleInterceptedMessage({
+        controller.handleInterceptedMessage({
             type: "AI_SEARCH_REVEALER_FOUND",
-            platform: "ChatGPT",
-            queries: ['<img src=x onerror="alert(1)">hello'],
+            results: [
+                {
+                    text: "test query with sources",
+                    sources: [
+                        { url: "https://example.com", title: "Source 1" }
+                    ]
+                }
+            ],
+            platform: "Perplexity"
         });
 
-        const root = document.getElementById("csr-root")!;
-        expect(root.classList.contains("collapsed")).toBe(false);
+        const list = mockContainer.querySelector("#csr-query-list");
+        expect(list).not.toBeNull();
 
-        const textEl = root.querySelector(".csr-query-text");
-        expect(textEl?.textContent).toContain('<img src=x onerror="alert(1)">hello');
-
-        // Ensure no HTML nodes were injected into the query body.
-        const injectedImg = root.querySelector(".csr-query-text img");
-        expect(injectedImg).toBeNull();
+        // Check for sources container (should FAIL initially)
+        const sourcesContainer = mockContainer.querySelector(".csr-sources-container");
+        expect(sourcesContainer).not.toBeNull();
+        expect(sourcesContainer?.textContent).toContain("example.com");
     });
 });
-

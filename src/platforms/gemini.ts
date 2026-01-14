@@ -23,8 +23,9 @@ export const GeminiContext: IPlatformExtractor = {
             url.includes("/_/BardChatUi/data/batchexecute")
         );
     },
-    extractQueries(text: string): string[] | null {
+    extract(text: string): { text: string; sources?: import("./types").Source[] }[] | null {
         const queries = new Set<string>();
+        const sources = new Map<string, import("./types").Source>();
 
         // Gemini's batchexecute response is prefixed with )]}' and uses a multi-part format
         let cleanText = text.trim();
@@ -131,6 +132,19 @@ export const GeminiContext: IPlatformExtractor = {
                         findQueries(value, currentPath);
                     }
                 }
+
+                // Check for groundingMetadata or citations in this object
+                const rec = obj as any;
+                if (rec.citations && Array.isArray(rec.citations)) {
+                    rec.citations.forEach((c: any) => {
+                        if (c.url) sources.set(c.url, { url: c.url, title: c.title || new URL(c.url).hostname });
+                    });
+                }
+                if (rec.groundingMetadata?.citations && Array.isArray(rec.groundingMetadata.citations)) {
+                    rec.groundingMetadata.citations.forEach((c: any) => {
+                        if (c.url) sources.set(c.url, { url: c.url, title: c.title || new URL(c.url).hostname });
+                    });
+                }
             }
         };
 
@@ -179,6 +193,11 @@ export const GeminiContext: IPlatformExtractor = {
         }
 
         if (queries.size > 0) console.log("[AI Search Revealer] Gemini Found total:", queries.size);
-        return queries.size > 0 ? Array.from(queries) : null;
+
+        const uniqueSources = Array.from(sources.values());
+        return queries.size > 0 ? Array.from(queries).map(q => ({
+            text: q,
+            sources: uniqueSources.length > 0 ? uniqueSources : undefined
+        })) : null;
     },
 };

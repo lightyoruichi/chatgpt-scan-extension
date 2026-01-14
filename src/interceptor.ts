@@ -2,7 +2,7 @@ import { ChatGPTContext } from "./platforms/chatgpt";
 import { ClaudeContext } from "./platforms/claude";
 import { PerplexityContext } from "./platforms/perplexity";
 import { GeminiContext } from "./platforms/gemini";
-import { IPlatformExtractor, InterceptedMessage } from "./platforms/types";
+import { IPlatformExtractor } from "./platforms/types";
 
 (() => {
     const PLATFORMS: IPlatformExtractor[] = [
@@ -18,12 +18,13 @@ import { IPlatformExtractor, InterceptedMessage } from "./platforms/types";
 
     log("Initializing...");
 
-    const notifyUI = (queries: string[], platform?: string) => {
-        if (queries.length === 0) return;
-        log(`Found queries for ${platform || 'Unknown'}:`, queries);
-        const message: InterceptedMessage = {
+    const notifyUI = (results: any[], platform?: string) => { // Use specific type if available, but for now any[] is safe transient
+        if (results.length === 0) return;
+        log(`Found results for ${platform || 'Unknown'}:`, results);
+        const message: any = { // Update strict type below
             type: "AI_SEARCH_REVEALER_FOUND",
-            queries,
+            results,
+            queries: results.map(r => r.text), // Backwards compat shim if needed, or just use results
             platform
         };
         window.postMessage(message, "*");
@@ -63,8 +64,8 @@ import { IPlatformExtractor, InterceptedMessage } from "./platforms/types";
                     const clone = response.clone();
                     const text = await clone.text();
                     log(`Processing ${text.length} bytes for ${platform.name}`);
-                    const queries = platform.extractQueries(text);
-                    if (queries && queries.length > 0) notifyUI(queries, platform.name);
+                    const results = platform.extract(text);
+                    if (results && results.length > 0) notifyUI(results, platform.name);
                 } catch (e) {
                     log("Error processing:", e);
                 }
@@ -91,8 +92,8 @@ import { IPlatformExtractor, InterceptedMessage } from "./platforms/types";
 
             if (platform) {
                 es.addEventListener("message", (event) => {
-                    const queries = platform.extractQueries(`data: ${event.data}`);
-                    if (queries) notifyUI(queries, platform.name);
+                    const results = platform.extract(`data: ${event.data}`);
+                    if (results) notifyUI(results, platform.name);
                 });
             }
             return es;
@@ -127,8 +128,8 @@ import { IPlatformExtractor, InterceptedMessage } from "./platforms/types";
                 if (xhr.readyState === 4 && requestUrl) {
                     const platform = PLATFORMS.find((p) => p.shouldIntercept(requestUrl!));
                     if (platform && xhr.responseText) {
-                        const queries = platform.extractQueries(xhr.responseText);
-                        if (queries) notifyUI(queries, platform.name);
+                        const results = platform.extract(xhr.responseText);
+                        if (results) notifyUI(results, platform.name);
                     }
                 }
             };
