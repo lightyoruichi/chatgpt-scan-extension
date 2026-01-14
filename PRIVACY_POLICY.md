@@ -26,7 +26,6 @@ While the extension runs on third-party AI platforms (ChatGPT, Claude, Perplexit
 
 ## 4. Permissions Disclosure
 To function correctly, AI Search Revealer requires the following permissions:
-- `storage`: To save your local preferences (e.g., if you've closed the overlay).
 - `clipboardWrite`: To allow you to click and copy search queries to your clipboard.
 - `contextMenus`: To provide quick-access search and explanation tools when you highlight text.
 - `host_permissions`: Limited strictly to `chatgpt.com`, `claude.ai`, `perplexity.ai`, and `gemini.google.com` to allow for network interception.

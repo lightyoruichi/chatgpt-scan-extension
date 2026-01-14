@@ -44,7 +44,7 @@
       "css": [
         "content.css"
       ],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ],
   "background": {
@@ -52,7 +52,6 @@
     "type": "module"
   },
   "permissions": [
-    "storage",
     "clipboardWrite",
     "contextMenus"
   ],
