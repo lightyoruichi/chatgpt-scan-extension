@@ -29,8 +29,8 @@
 ### 1. Build from Source
 Ensure you have [Node.js](https://nodejs.org/) installed, then run:
 ```bash
-# Install dependencies
-npm install
+# Install dependencies (recommended)
+npm ci
 
 # Build the production bundle
 npm run build
@@ -48,7 +48,31 @@ npm run build
 
 - **Core**: TypeScript (Strict Level 10)
 - **Bundler**: Vite
+- **Tests**: Vitest + jsdom
 - **Manifest**: Version 3 (Modern Standards)
+
+---
+
+## ✅ Development Commands
+
+```bash
+# Typecheck
+npm run check
+
+# Run unit tests
+npm test
+
+# Run CI "lint" step (typecheck)
+npm run lint
+```
+
+---
+
+## 🔐 Permissions (Current)
+
+- **`clipboardWrite`**: Copy a revealed query when you click it.
+- **`contextMenus`**: Adds the selection menu items (Verify with Google / Explain with ChatGPT).
+- **`host_permissions`**: Only on `chatgpt.com`, `claude.ai`, `perplexity.ai`, and `gemini.google.com` to intercept responses locally and extract queries.
 
 ---
 
