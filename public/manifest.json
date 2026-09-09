@@ -19,6 +19,7 @@
     {
       "matches": [
         "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
         "https://claude.ai/*",
         "https://www.perplexity.ai/*",
         "https://perplexity.ai/*",
@@ -33,6 +34,7 @@
     {
       "matches": [
         "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
         "https://claude.ai/*",
         "https://www.perplexity.ai/*",
         "https://perplexity.ai/*",
@@ -57,6 +59,7 @@
   ],
   "host_permissions": [
     "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
     "https://claude.ai/*",
     "https://www.perplexity.ai/*",
     "https://perplexity.ai/*",
