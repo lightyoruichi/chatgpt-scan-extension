@@ -1,90 +1,98 @@
-# 🔍 AI Search Revealer (Premium Edition)
+# AI Search Revealer
 
-![AI Search Revealer Icon](./public/icons/icon128.png)
+A Chrome extension (Manifest V3) that reveals the hidden web-search queries AI assistants run behind the scenes before answering. When ChatGPT, Claude, Perplexity, or Gemini searches the web to answer your prompt, this extension captures those queries and shows them in a small overlay panel with one-click research links.
 
-**AI Search Revealer** is a high-performance, premium Chrome extension that uncovers the hidden search queries used by AI models before they answer your prompts. Gain deep insights into the "thought process" of your favorite LLMs.
+Developed by [MIMR Growth Lab](https://mimrgrowthlab.com).
 
----
+## Features
 
-## 🚀 Key Features
+- Captures the model's real search queries in real time, as they are issued.
+- Supports ChatGPT, Claude, Perplexity, and Gemini.
+- Overlay panel with minimize-to-bubble mode and a live capture counter badge.
+- One-click actions per query: verify on Google, check Google Trends, copy to clipboard.
+- Shows cited/retrieved sources alongside queries where available.
+- Context-menu items: "Verify with Google Search" and "Explain with ChatGPT" for selected text.
+- Local-first: all interception and parsing happens in your browser. No data leaves your machine. See [PRIVACY_POLICY.md](./PRIVACY_POLICY.md).
 
-- **Multi-Platform Intelligence**: Unified, robust extraction for:
-  - **ChatGPT** (SearchGPT & standard models)
-  - **Claude** (Tool-use & completion parsing)
-  - **Perplexity** (SSE message extraction)
-  - **Gemini** (Advanced deep-array parsing of `batchexecute` responses)
-- **Premium Glassmorphism UI**: A stunning, non-intrusive overlay with real-time "Live" status and platform-specific tagging.
-- **Bubble Mode (UX)**: Minimize the UI into a small, pulsing bubble to keep your workspace clean.
-- **One-Click Research Tools**:
-  - 🔎 **Verify**: Instant Google Search for any query.
-  - 📈 **Trends**: Check real-time demand on Google Trends.
-  - 🧠 **Insights**: Deep-dive into AnswerThePublic research.
-- **Proof of Value**: Real-time badge counter on the extension icon showing searches occurring behind the scenes.
-- **Power Features**: Right-click context menus for "Verify with Google" and "Explain with ChatGPT."
+## Supported platforms
 
----
+| Platform   | Page(s)                              | What is captured                                  |
+|------------|--------------------------------------|---------------------------------------------------|
+| ChatGPT    | `chatgpt.com`, `chat.openai.com`     | `search_model_queries`, search tool calls, sources from `search_result_groups` / `content_references` |
+| Claude     | `claude.ai`                          | `web_search` tool-use queries                     |
+| Perplexity | `perplexity.ai`                      | Search queries, citations, and web results        |
+| Gemini     | `gemini.google.com`                  | Search queries from `batchexecute` responses, grounding sources |
 
-## 🛠 Installation Guide
+## Installation
 
-### 1. Build from Source
-Ensure you have [Node.js](https://nodejs.org/) installed, then run:
+### Option A: Load the prebuilt copy
+
+1. Open Chrome and go to `chrome://extensions/`.
+2. Enable **Developer Mode** (top-right toggle).
+3. Click **Load unpacked** and select the `chatgpt-scan-extension/` folder in this repo.
+4. Alternatively, unzip `ai-search-revealer.zip` and load the extracted folder instead.
+
+### Option B: Build from source
+
+Requires [Node.js](https://nodejs.org/) (see `.github/workflows` for the CI version).
+
 ```bash
-# Install dependencies (recommended)
 npm ci
-
-# Build the production bundle
 npm run build
 ```
 
-### 2. Load into Chrome
-1. Open Chrome and navigate to `chrome://extensions/`.
-2. Enable **Developer Mode** (toggle in the top-right corner).
-3. Click **Load unpacked**.
-4. Select the `dist` folder generated in your project directory.
+Then load the generated `dist/` folder via **Load unpacked** as above.
 
----
+## Usage
 
-## 🏗 Technical Stack
+1. Visit a supported AI chat page and ask a question that triggers web search.
+2. The overlay panel appears with each captured query and its sources.
+3. Click a query's action links to verify it on Google or Google Trends, or click the query text to copy it.
+4. Click the minimize button to collapse the panel into a bubble; click the bubble to expand it again.
 
-- **Core**: TypeScript (Strict Level 10)
-- **Bundler**: Vite
-- **Tests**: Vitest + jsdom
-- **Manifest**: Version 3 (Modern Standards)
-
----
-
-## ✅ Development Commands
+## Development
 
 ```bash
-# Typecheck
-npm run check
-
-# Run unit tests
-npm test
-
-# Run CI "lint" step (typecheck)
-npm run lint
+npm run dev            # Start Vite dev server
+npm run build          # Typecheck and build to dist/
+npm run check          # Typecheck only (tsc --noEmit)
+npm run lint           # Same as check (runs in CI)
+npm test               # Run unit tests (Vitest)
+npm run test:coverage  # Run tests with coverage
 ```
 
----
+Project layout:
 
-## 🔐 Permissions (Current)
+```
+public/manifest.json        Extension manifest (MV3)
+src/content.ts              Isolated-world content script (UI bridge)
+src/interceptor.ts          MAIN-world network interceptor (fetch/XHR/EventSource)
+src/platforms/              Per-platform endpoint matchers and response parsers
+src/ui/controller.ts        Overlay panel controller
+chatgpt-scan-extension/     Prebuilt loadable copy of the extension
+ai-search-revealer.zip      Zipped release of the prebuilt copy
+```
 
-- **`clipboardWrite`**: Copy a revealed query when you click it.
-- **`contextMenus`**: Adds the selection menu items (Verify with Google / Explain with ChatGPT).
-- **`host_permissions`**: Only on `chatgpt.com`, `claude.ai`, `perplexity.ai`, and `gemini.google.com` to intercept responses locally and extract queries.
+After changing `src/`, rebuild and re-sync the prebuilt copy and zip before releasing:
 
----
+```bash
+npm run build
+cp dist/background.js dist/content.js dist/content.css dist/interceptor.js dist/manifest.json chatgpt-scan-extension/
+rm -f ai-search-revealer.zip && (cd chatgpt-scan-extension && zip -qr ../ai-search-revealer.zip . -x '*.DS_Store*')
+```
 
-## 🔒 Privacy & Local-First Philosophy
+## Permissions
 
-- **100% Local**: All network interception and parsing occur entirely within your browser. **No data ever leaves your computer.**
-- **No Analytics**: We do not track you. No cookies, no tracking pixels, no telemetry.
-- **Open Standards**: Fully compliant with Chrome Web Store safety guidelines.
+- `clipboardWrite` — copy a revealed query when you click it.
+- `contextMenus` — selection menu items (verify with Google / explain with ChatGPT).
+- `host_permissions` — limited to `chatgpt.com`, `chat.openai.com`, `claude.ai`, `perplexity.ai`, and `gemini.google.com` for local response interception.
 
-[Review our Full Privacy Policy](./PRIVACY_POLICY.md)
+## Privacy
 
----
+100% local processing, no analytics, no tracking. Full policy: [PRIVACY_POLICY.md](./PRIVACY_POLICY.md).
 
-### Developed with ❤️ by [MIMR Growth Lab](https://mimrgrowthlab.com)
-© 2025 MIMR Growth Lab. All Rights Reserved.
+## Credits
+
+Developed by [MIMR Growth Lab](https://mimrgrowthlab.com).
+
+Copyright (c) MIMR Growth Lab. All rights reserved.
