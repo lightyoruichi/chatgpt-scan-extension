@@ -18,6 +18,18 @@ import { IPlatformExtractor } from "./platforms/types";
 
     log("Initializing...");
 
+    // Re-entrancy guard: the MAIN-world script can be injected more than once
+    // into the same page (duplicate unpacked copies, extension reload/update).
+    // Without this, top-level redeclaration kills the whole script with
+    // "Identifier 'S' has already been declared" and fetch/XHR get
+    // patched twice, producing duplicate captures.
+    const LOADED_FLAG = "__AI_SEARCH_REVEALER_INTERCEPTOR_LOADED__";
+    if ((window as unknown as Record<string, unknown>)[LOADED_FLAG]) {
+        log("Already loaded, skipping re-initialization");
+        return;
+    }
+    (window as unknown as Record<string, unknown>)[LOADED_FLAG] = true;
+
     const notifyUI = (results: any[], platform?: string) => { // Use specific type if available, but for now any[] is safe transient
         if (results.length === 0) return;
         log(`Found results for ${platform || 'Unknown'}:`, results);

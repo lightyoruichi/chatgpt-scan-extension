@@ -1,29 +1,18 @@
-console.log("%c[AI Search Revealer Premium UI]","color: #00f2fe; font-weight: bold; font-size: 14px;","Active");let n=!1,i=[];window.addEventListener("message",e=>{if(e.source!==window)return;const o=e.data;o.type==="AI_SEARCH_REVEALER_FOUND"&&Array.isArray(o.queries)&&(o.queries.forEach(t=>{i.some(s=>s.text===t)||i.unshift({text:t,platform:o.platform,timestamp:Date.now()})}),a(),chrome.runtime.sendMessage({type:"UPDATE_BADGE",count:i.length}).catch(()=>{})),o.type==="INTERCEPTOR_READY"&&chrome.runtime.sendMessage({type:"INTERCEPTOR_READY"}).catch(()=>{})});chrome.runtime.onMessage.addListener((e,o,t)=>{if(e.type==="PING_INTERCEPTOR"){window.postMessage({type:"PING_INTERCEPTOR"},"*");const s=c=>{var r;c.source===window&&((r=c.data)==null?void 0:r.type)==="INTERCEPTOR_READY"&&(window.removeEventListener("message",s),t({ready:!0}))};return window.addEventListener("message",s),setTimeout(()=>{window.removeEventListener("message",s),t({ready:!1})},500),!0}return!1});function a(){let e=document.getElementById("csr-root");if(e||(e=document.createElement("div"),e.id="csr-root",e.className="csr-container csr-fade-in",document.body.appendChild(e),e.onclick=()=>{n&&(n=!1,a())}),n){e.classList.add("collapsed"),e.innerHTML='<div class="csr-live-dot" style="width:12px; height:12px;"></div>';return}e.classList.remove("collapsed"),e.onclick=null,e.innerHTML=`
-        <div class="csr-header">
-            <div class="csr-title-group">
-                <div class="csr-title">
-                    <div class="csr-live-dot"></div>
-                    AI SEARCH REVEALER
+function x(t){let c=!0;const u=[],g=()=>{let e=t.doc.getElementById("csr-root");if(e)return e;if(e=t.doc.createElement("div"),e.id="csr-root",e.className="csr-container csr-fade-in",e.setAttribute("data-csr-root","true"),(t.doc.body??t.doc.documentElement).appendChild(e),!t.doc.body&&typeof MutationObserver<"u"){const r=new MutationObserver(()=>{t.doc.body&&e&&e.parentElement!==t.doc.body&&(t.doc.body.appendChild(e),r.disconnect())});r.observe(t.doc.documentElement,{childList:!0,subtree:!0})}return e.addEventListener("click",()=>{c&&(c=!1,m())}),e.addEventListener("keydown",r=>{c&&(r.key==="Enter"||r.key===" ")&&(r.preventDefault(),c=!1,m())}),e},m=()=>{const e=g();if(c){e.classList.add("collapsed"),e.setAttribute("role","button"),e.setAttribute("tabindex","0"),e.setAttribute("aria-label","Open AI Search Revealer"),e.innerHTML="";const r=t.doc.createElement("div");r.className="csr-live-dot",r.style.width="12px",r.style.height="12px",e.appendChild(r);return}e.classList.remove("collapsed"),e.removeAttribute("role"),e.removeAttribute("tabindex"),e.removeAttribute("aria-label"),e.innerHTML=`
+            <div class="csr-header">
+                <div class="csr-title-group">
+                    <div class="csr-title">
+                        <div class="csr-live-dot" aria-hidden="true"></div>
+                        AI SEARCH REVEALER
+                    </div>
+                    <a href="https://mimrgrowthlab.com/" target="_blank" rel="noreferrer" class="csr-attribution">by MIMR Growth Lab</a>
                 </div>
-                <a href="https://mimrgrowthlab.com/" target="_blank" class="csr-attribution">by MIMR Growth Lab</a>
-            </div>
-            <div class="csr-controls">
-                <button title="Minimize" class="csr-btn" id="csr-collapse-btn">−</button>
-                <button title="Close" class="csr-btn" id="csr-close-btn">&times;</button>
-            </div>
-        </div>
-        <div class="csr-content">
-            <ul class="csr-list" id="csr-query-list"></ul>
-        </div>
-    `;const o=e.querySelector("#csr-query-list");i.forEach(t=>{const s=document.createElement("li");s.className="csr-item";const c=`platform-${(t.platform||"unknown").toLowerCase()}`,r=encodeURIComponent(t.text);s.innerHTML=`
-            <div class="csr-item-header">
-                <span class="csr-platform-tag ${c}">${t.platform||"QUERY"}</span>
-                <div class="csr-tools">
-                    <a href="https://www.google.com/search?q=${r}" target="_blank" class="csr-tool-link" title="Verify on Google">🔎</a>
-                    <a href="https://trends.google.com/trends/explore?q=${r}" target="_blank" class="csr-tool-link" title="Trends">📈</a>
-                    <a href="https://answerthepublic.com/?q=${r}" target="_blank" class="csr-tool-link" title="Deep Insights">🧠</a>
+                <div class="csr-controls">
+                    <button type="button" aria-label="Minimize" title="Minimize" class="csr-btn" id="csr-collapse-btn">−</button>
+                    <button type="button" aria-label="Close" title="Close" class="csr-btn" id="csr-close-btn">&times;</button>
                 </div>
             </div>
-            <div class="csr-query-text">${t.text}</div>
-            <div class="csr-copy-hint">Click text to copy</div>
-        `;const d=s.querySelector(".csr-query-text");d.onclick=()=>{navigator.clipboard.writeText(t.text).then(()=>{const l=s.querySelector(".csr-copy-hint");l.textContent="COPIED!",l.style.color="#10a37f",setTimeout(()=>{l.textContent="Click text to copy",l.style.color=""},2e3)})},o.appendChild(s)}),document.getElementById("csr-collapse-btn").onclick=t=>{t.stopPropagation(),n=!0,a()},document.getElementById("csr-close-btn").onclick=t=>{t.stopPropagation(),e==null||e.remove()}}
+            <div class="csr-content">
+                <ul class="csr-list" id="csr-query-list"></ul>
+            </div>
+        `;const h=e.querySelector("#csr-query-list");if(u.length===0){const r=t.doc.createElement("li");r.className="csr-item csr-empty";const o=t.doc.createElement("div");o.className="csr-query-text",o.textContent="No searches captured yet.";const a=t.doc.createElement("div");a.className="csr-copy-hint",a.textContent="Ask a question that triggers web search to see queries here.",a.style.opacity="0.7",r.appendChild(o),r.appendChild(a),h.appendChild(r)}else u.forEach(r=>{const o=t.doc.createElement("li");o.className="csr-item";const a=t.doc.createElement("div");a.className="csr-item-header";const f=t.doc.createElement("span"),w=`platform-${(r.platform||"unknown").toLowerCase()}`;f.className=`csr-platform-tag ${w}`,f.textContent=r.platform||"QUERY";const p=t.doc.createElement("div");p.className="csr-tools";const y=encodeURIComponent(r.text),C=(i,d,s)=>{const n=t.doc.createElement("a");return n.className="csr-tool-link",n.href=i,n.target="_blank",n.rel="noreferrer",n.title=d,n.setAttribute("aria-label",d),n.textContent=s,n};p.appendChild(C(`https://www.google.com/search?q=${y}`,"Verify on Google","🔎")),p.appendChild(C(`https://trends.google.com/trends/explore?q=${y}`,"Trends","📈")),p.appendChild(C(`https://answerthepublic.com/?q=${y}`,"Deep Insights","🧠")),a.appendChild(f),a.appendChild(p);const b=t.doc.createElement("div");if(b.className="csr-query-text",b.textContent=r.text,r.sources&&r.sources.length>0){const i=t.doc.createElement("div");i.className="csr-sources-container",r.sources.forEach(d=>{const s=t.doc.createElement("a");s.className="csr-source-chip",s.href=d.url,s.target="_blank",s.rel="noreferrer",s.title=d.title||d.url;const n=t.doc.createElement("img");n.className="csr-source-icon",n.src=`https://www.google.com/s2/favicons?domain=${new URL(d.url).hostname}&sz=16`,n.alt="",n.onerror=()=>{n.style.display="none"};const v=t.doc.createElement("span");v.textContent=new URL(d.url).hostname.replace("www.",""),s.appendChild(n),s.appendChild(v),i.appendChild(s)}),o.appendChild(i)}const l=t.doc.createElement("div");l.className="csr-copy-hint",l.textContent="Click text to copy",b.addEventListener("click",()=>{var i;(i=t.win.navigator.clipboard)==null||i.writeText(r.text).then(()=>{l.textContent="COPIED!",l.style.color="#10a37f",t.win.setTimeout(()=>{l.textContent="Click text to copy",l.style.color=""},2e3)}).catch(()=>{l.textContent="Copy failed",l.style.color="#ef4444"})}),o.appendChild(a),o.appendChild(b),o.appendChild(l),h.appendChild(o)});e.querySelector("#csr-collapse-btn").onclick=r=>{r.stopPropagation(),c=!0,m()},e.querySelector("#csr-close-btn").onclick=r=>{r.stopPropagation(),e==null||e.remove()}};return{render:m,handleInterceptedMessage:e=>{var r;const h=[];Array.isArray(e.results)?h.push(...e.results):Array.isArray(e.queries)&&h.push(...e.queries.map(o=>({text:o}))),h.forEach(o=>{u.some(a=>a.text===o.text)||u.unshift({text:o.text,platform:e.platform,timestamp:Date.now(),sources:o.sources})}),c&&u.length>0&&(c=!1),m(),(r=t.sendBadgeUpdate)==null||r.call(t,u.length)},getState:()=>({isCollapsed:c,capturedQueries:[...u]})}}console.log("%c[AI Search Revealer Premium UI]","color: #00f2fe; font-weight: bold; font-size: 14px;","Active");const E=x({doc:document,win:window,sendBadgeUpdate:t=>chrome.runtime.sendMessage({type:"UPDATE_BADGE",count:t}).catch(()=>{})});window.addEventListener("message",t=>{if(t.source!==window)return;const c=t.data;E.handleInterceptedMessage(c)});E.render();
